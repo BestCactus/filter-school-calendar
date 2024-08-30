@@ -4,7 +4,7 @@ import { Hono } from 'hono';
 
 const app = new Hono();
 
-const filterCalendar = async (mainRegex = /2.? ?a[^j]/i, germanRegex = /2.? ?nj/i, englishRegex = /2.? ?aj/i) => {
+const filterCalendar = async (query) => {
 	// Fetch calendar from school website
 	const resp = await fetch('https://classis.cgnr.cz/calendar/982ed8baf0bb7d245220884c43b8378c&noCache');
 	console.log('STATUS:', resp.status);
@@ -16,6 +16,28 @@ const filterCalendar = async (mainRegex = /2.? ?a[^j]/i, germanRegex = /2.? ?nj/
 	const importedCalendar = ical.parseICS(data);
 
 	const currDate = new Date();
+	let englishRegex;
+	let germanRegex;
+	if (query.aj) {
+		if (query.aj[0] == 1) {
+			englishRegex = /1.?aj1/i;
+		} else if (query.aj[0] == 2) {
+			englishRegex = /1.?aj2/i;
+		} else if (query.aj[0] == 3) {
+			englishRegex = /1.?aj3/i;
+		}
+	}
+	if (query.nj) {
+		if (query.nj[0] == 1) {
+			germanRegex = /1.?nj1/i;
+		} else if (query.nj[0] == 2) {
+			germanRegex = /1.?nj2/i;
+		} else if (query.nj[0] == 3) {
+			germanRegex = /1.?nj3/i;
+		}
+	}
+	const mainRegex = /[1-4].?[bd(?:mr|zsv|fymed)]|[2-4].?[abd(?:mr|zsv|fymed)]|sbor|maturit|sch(?:u|ů|ú)zk/i;
+	// /1.?a[^j]/i;
 
 	//output calendar array
 	const validEventsArr = [];
@@ -41,25 +63,25 @@ const filterCalendar = async (mainRegex = /2.? ?a[^j]/i, germanRegex = /2.? ?nj/
 
 		//testing all regexes
 		if (mainRegex) {
-			if (mainRegex.test(eventObj.description)) {
+			if (!mainRegex.test(eventObj.description.replace(' ', ''))) {
 				validEventsArr.push(outputObj);
 				continue;
 			}
 		}
 		if (germanRegex) {
-			if (germanRegex.test(eventObj.description)) {
+			if (germanRegex.test(eventObj.description.replace(' ', ''))) {
 				validEventsArr.push(outputObj);
 				continue;
 			}
 		}
 		if (englishRegex) {
-			if (englishRegex.test(eventObj.description)) {
+			if (englishRegex.test(eventObj.description.replace(' ', ''))) {
 				validEventsArr.push(outputObj);
 				continue;
 			}
 		}
 	}
-	console.log('\n Number of Filtered Events: ', validEventsArr.length);
+	console.log('number of events: ', validEventsArr.length);
 	const { error, value } = ics.createEvents(validEventsArr);
 	const outputCalendar = value;
 	if (error) {
@@ -69,24 +91,44 @@ const filterCalendar = async (mainRegex = /2.? ?a[^j]/i, germanRegex = /2.? ?nj/
 	return outputCalendar;
 };
 
+const test = () => {
+	const html = `
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Test page</title>
+		<style>
+			body {
+				background-color: black;
+				color: white;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Test page</h1>
+		<script>
+			console.log('works');
+		</script>
+	</body>
+</html>
+
+`;
+	return html;
+};
+
 app.get('/', async (c) => {
-	return c.text(await filterCalendar());
+	const ajGroup = c.req.query('aj');
+	const njGroup = c.req.query('nj');
+	if (ajGroup || njGroup) {
+		return c.text(await filterCalendar(c.req.queries()));
+	}
+	return c.html(test());
 });
 
-app.get('/cela-trida', async (c) => {
-	return c.text(await filterCalendar(/1.? ?a[^j]/i, false, false));
-});
-
-app.get('/skupina-1', async (c) => {
-	return c.text(await filterCalendar(/1.? ?a[^j]/i, /1.? ?nj ?1/i, /1.? ?aj ?1/i));
-});
-
-app.get('/skupina-2', async (c) => {
-	return c.text(await filterCalendar(/1.? ?a[^j]/i, /1.? ?nj ?2/i, /1.? ?aj ?2/i));
-});
-
-app.get('/skupina-3', async (c) => {
-	return c.text(await filterCalendar(/1.? ?a[^j]/i, /1.? ?nj ?3/i, /1.? ?aj ?3/i));
+app.get('/spolecne', async (c) => {
+	return c.text(await filterCalendar(c.req.queries()));
 });
 
 export default app;
