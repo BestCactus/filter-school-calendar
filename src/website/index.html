@@ -15,7 +15,57 @@
 		<script src="https://kit.fontawesome.com/9dc89b769e.js" crossorigin="anonymous"></script>
 		<title>1.A Školní Kalendář</title>
 	</head>
-	<body>
-		<h1>1.A Školní Kalendář</h1>
+	<body data-bs-theme="dark">
+		<div class="container-fluid">
+			<h1 class="text-center my-3">2.A Školní Kalendář</h1>
+			<p class="h5 desc text-center mb-4">Kalendář s testy pro třídu 2.A, různé verze pro všechny skupiny.</p>
+			<p class="desc info-text text-center">
+				Filtr má vysokou účinost, ale může něco vynechat. Doporučujeme požádat učitele, aby testy do classisu zapisoval přesně tak, jak je
+				napsaná skupina (2.A, 2aj2, 2nj1). Pokud zaznamenáte, že chybí nějaký test, kontaktujte nás.
+			</p>
+			<h2 class="text-center mt-4">Jak na to?</h2>
+			<ol class="mb-5">
+				<li>Vyber si, jaké máš učitele z jakých předmětů</li>
+				<li>Zkopíruj nebo klikni na "přídat do aplikace"</li>
+				<li>Přidej nový "odběr kalendáře" ve své aplikaci</li>
+			</ol>
+			<div class="settings-container d-grid gap-2 container justify-content-center">
+				<div class="d-flex justify-content-center gap-3 text-center">
+					<div class="d-grid justify-content-center gap-1">
+						<label class="select-label" for="aj-select">AJ skupina</label>
+						<select id="aj-select">
+							<option>Černíková (2aj1)</option>
+							<option>Lugerová (2aj2)</option>
+							<option>Svítková (2aj3)</option>
+						</select>
+					</div>
+					<div class="d-grid justify-content-center gap-1">
+						<label class="select-label" for="nj-select">NJ skupina</label>
+						<select id="nj-select">
+							<option>Moláček (2nj1)</option>
+							<option>Máliková (2nj2)</option>
+							<option>Kratochvílová (2nj3)</option>
+						</select>
+					</div>
+				</div>
+				<div class="d-flex justify-content-center gap-2">
+					<input type="checkbox" id="spolecne-checkbox" />
+					<label for="spolecne-checkbox">Chci pouze společné testy </label>
+				</div>
+				<p class="output mt-3"><a class="output-link" href=""></a><button class="btn copy-btn copy-btn-desktop">Kopírovat</button></p>
+				<div class="text-center">
+					<button class="btn copy-btn copy-btn-mobile">Kopírovat</button>
+					<p></p>
+					<a class="btn add-btn"><i class="fa fa-calendar-o" aria-hidden="true"></i> Přidat kalendář do aplikace</a>
+				</div>
+				<p class="text-center copy-msg-container">
+					<span class="copied-msg"><i id="copy-icon" class="fa fa-circle-check" style="color: #0da10a"></i> Zkopírováno do schránky</span>
+				</p>
+			</div>
+		</div>
+		<footer class="d-grid justify-content-center text-center">
+			<a href="https://github.com/BestCactus/filter-school-calendar"><i class="fa fa-github fa-xl"></i> Github</a>
+		</footer>
+		<div class="blur-circle"></div>
 	</body>
 </html>
